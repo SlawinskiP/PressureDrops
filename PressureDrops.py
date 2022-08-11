@@ -11,7 +11,7 @@ DN = {"DN20": 21.6,             #Nominal diameters, mm
       "DN80": 80.8,
       "DN100": 105.3}
 
-def dp(d_in, T, p, u, fluid): #(internal diameter, temperature, pressure, velocity, fluid)
+def dp(d_in, T, p, u, k, fluid): #(internal diameter, temperature, pressure, velocity, fluid)
       D_h = d_in / 1000 #hydraulic diameter, m
       ro = CP.PropsSI("D", "T", T, "P", p*10**5, fluid) #density, kg/m3
       visc_kin = CP.PropsSI("VISCOSITY", "T", T, "P", p*10**5, fluid) / ro #kinematic viscosity, m2/s
@@ -22,7 +22,7 @@ def dp(d_in, T, p, u, fluid): #(internal diameter, temperature, pressure, veloci
             lam1 = 0.01
             Convergence = False
             while Convergence == False:
-                  lam = (1 / (2 * math.log10(Re * math.sqrt(lam1)) - 0.8))**2
+                  lam = (1 / (-2 * math.log10(2.5 / (Re * math.sqrt(lam1)) + k / (3.7 * d_in))))**2
                   error = abs(lam1 - lam) / lam
                   if error < 0.5:
                         Convergence = True
@@ -32,4 +32,4 @@ def dp(d_in, T, p, u, fluid): #(internal diameter, temperature, pressure, veloci
       return(dp)
 
 for i in np.arange(1, 2, 0.1):
-      print(dp(21.6, 77, 18, i, "nitrogen"))
+      print(dp(21.6, 77, 18, i, 0.05, "nitrogen"))
